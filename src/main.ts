@@ -24,20 +24,23 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('ByteAll API')
-    .setDescription('ByteAll backend API documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('ByteAll API')
+      .setDescription('ByteAll backend API documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   // Enable graceful shutdown hooks (required for PrismaService.onModuleDestroy)
   app.enableShutdownHooks();
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application running on: ${await app.getUrl()}`);
-  console.log(`Swagger docs: ${await app.getUrl()}/api/docs`);
+  const url = await app.getUrl();
+  console.log(`Application running on: ${url}`);
+  console.log(`Swagger docs: ${url}/api/docs`);
 }
 bootstrap();
