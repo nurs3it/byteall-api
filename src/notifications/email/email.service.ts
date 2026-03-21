@@ -10,7 +10,7 @@ export class EmailService {
   constructor(private readonly config: ConfigService) {
     this.transporter = nodemailer.createTransport({
       host: config.get<string>('SMTP_HOST'),
-      port: config.get<number>('SMTP_PORT'),
+      port: parseInt(config.get<string>('SMTP_PORT') ?? '587', 10),
       auth: {
         user: config.get<string>('SMTP_USER'),
         pass: config.get<string>('SMTP_PASS'),
@@ -19,13 +19,21 @@ export class EmailService {
   }
 
   async sendOtp(to: string, code: string): Promise<void> {
-    await this.transporter.sendMail({
-      from: this.config.get<string>('SMTP_FROM'),
-      to,
-      subject: 'Your verification code',
-      text: `Your verification code is: ${code}. Valid for 10 minutes.`,
-      html: `<p>Your verification code is: <strong>${code}</strong></p><p>Valid for 10 minutes.</p>`,
-    });
-    this.logger.log(`OTP email sent to ${to}`);
+    try {
+      await this.transporter.sendMail({
+        from: this.config.get<string>('SMTP_FROM'),
+        to,
+        subject: 'Your verification code',
+        text: `Your verification code is: ${code}. Valid for 10 minutes.`,
+        html: `<p>Your verification code is: <strong>${code}</strong></p><p>Valid for 10 minutes.</p>`,
+      });
+      this.logger.log(`OTP email sent to ${to}`);
+    } catch (err) {
+      this.logger.error(
+        `Failed to send OTP email to ${to}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+      throw new Error('Email delivery failed');
+    }
   }
 }
