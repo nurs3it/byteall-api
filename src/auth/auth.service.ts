@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import type { StringValue } from 'ms';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../notifications/email/email.service';
@@ -173,7 +174,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       { sub: record.user.id, role: record.user.role, is_verified: record.user.isVerified },
-      { expiresIn: this.config.get<string>('JWT_ACCESS_TTL') },
+      { expiresIn: (this.config.get<string>('JWT_ACCESS_TTL') ?? '15m') as StringValue },
     );
     return { access_token: accessToken };
   }
@@ -217,7 +218,7 @@ export class AuthService {
   }) {
     const accessToken = this.jwtService.sign(
       { sub: user.id, role: user.role, is_verified: user.isVerified },
-      { expiresIn: this.config.get<string>('JWT_ACCESS_TTL') },
+      { expiresIn: (this.config.get<string>('JWT_ACCESS_TTL') ?? '15m') as StringValue },
     );
 
     const refreshToken = randomUUID();
