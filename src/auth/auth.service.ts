@@ -14,7 +14,8 @@ import { UsersService } from '../users/users.service';
 import { EmailService } from '../notifications/email/email.service';
 import { SmsService } from '../notifications/sms/sms.service';
 import * as bcrypt from 'bcrypt';
-import { randomUUID } from 'crypto';
+import { randomUUID, randomInt } from 'crypto';
+import { OtpType } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,7 @@ export class AuthService {
 
   // ─── OTP ───────────────────────────────────────────────────────────────
 
-  async verifyOtp(identifier: string, code: string, type: string) {
+  async verifyOtp(identifier: string, code: string, type: OtpType) {
     const user = identifier.includes('@')
       ? await this.usersService.findByEmail(identifier)
       : await this.usersService.findByPhone(identifier);
@@ -63,7 +64,7 @@ export class AuthService {
     const otpRecord = await this.prisma.otpCode.findFirst({
       where: {
         userId: user.id,
-        type: type as any,
+        type: type,
         used: false,
         expiresAt: { gt: new Date() },
       },
@@ -110,7 +111,7 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
-  async resendOtp(identifier: string, type: string): Promise<void> {
+  async resendOtp(identifier: string, type: OtpType): Promise<void> {
     const user = identifier.includes('@')
       ? await this.usersService.findByEmail(identifier)
       : await this.usersService.findByPhone(identifier);
@@ -119,7 +120,7 @@ export class AuthService {
 
     // 60-second cooldown
     const recent = await this.prisma.otpCode.findFirst({
-      where: { userId: user.id, type: type as any },
+      where: { userId: user.id, type: type },
       orderBy: { createdAt: 'desc' },
     });
     if (recent) {
@@ -134,7 +135,7 @@ export class AuthService {
 
     // Invalidate previous OTPs
     await this.prisma.otpCode.updateMany({
-      where: { userId: user.id, type: type as any, used: false },
+      where: { userId: user.id, type: type, used: false },
       data: { used: true },
     });
 
@@ -157,7 +158,7 @@ export class AuthService {
 
   async loginPhone(phone: string): Promise<void> {
     const user = await this.usersService.findByPhone(phone);
-    if (!user || !user.isVerified) throw new NotFoundException('User not found');
+    if (!user || !user.isVerified) throw new UnauthorizedException('Invalid credentials');
     await this.sendOtp(user.id, phone, 'phone_login');
   }
 
@@ -186,18 +187,18 @@ export class AuthService {
 
   // ─── Helpers ───────────────────────────────────────────────────────────
 
-  private async sendOtp(userId: string, destination: string, type: string): Promise<void> {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+  private async sendOtp(userId: string, destination: string, type: OtpType): Promise<void> {
+    const code = randomInt(100000, 1000000).toString();
     const codeHash = await bcrypt.hash(code, 10);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     await this.prisma.otpCode.updateMany({
-      where: { userId, type: type as any, used: false },
+      where: { userId, type: type, used: false },
       data: { used: true },
     });
 
     await this.prisma.otpCode.create({
-      data: { userId, codeHash, type: type as any, expiresAt },
+      data: { userId, codeHash, type: type, expiresAt },
     });
 
     if (destination.includes('@')) {
@@ -207,7 +208,13 @@ export class AuthService {
     }
   }
 
-  private async issueTokens(user: any) {
+  private async issueTokens(user: {
+    id: string;
+    role: string;
+    isVerified: boolean;
+    email?: string | null;
+    phone?: string | null;
+  }) {
     const accessToken = this.jwtService.sign(
       { sub: user.id, role: user.role, is_verified: user.isVerified },
       { expiresIn: this.config.get<string>('JWT_ACCESS_TTL') },
