@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsIn, Matches } from 'class-validator';
+import { IsString, IsIn, Matches, MaxLength } from 'class-validator';
 
 export class VerifyOtpDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsString()
+  @MaxLength(254)
   identifier: string;
 
   @ApiProperty({ example: '123456' })
