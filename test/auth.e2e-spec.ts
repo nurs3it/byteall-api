@@ -11,8 +11,8 @@ import { ResponseInterceptor } from '../src/common/interceptors/response.interce
 import { PrismaService } from '../src/prisma/prisma.service';
 import { EmailService } from '../src/notifications/email/email.service';
 import { SmsService } from '../src/notifications/sms/sms.service';
-import { ThrottlerGuard, ThrottlerStorage } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerStorage } from '@nestjs/throttler';
+import * as bcrypt from 'bcrypt';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
@@ -26,10 +26,6 @@ describe('Auth (e2e)', () => {
       .useValue({ sendOtp: jest.fn() })
       .overrideProvider(SmsService)
       .useValue({ sendOtp: jest.fn() })
-      .overrideProvider(ThrottlerGuard)
-      .useValue({ canActivate: () => true })
-      .overrideProvider(APP_GUARD)
-      .useValue({ canActivate: () => true })
       .overrideProvider(ThrottlerStorage)
       .useValue({
         increment: async () => ({ totalHits: 1, timeToExpire: 0, isBlocked: false, timeToBlockExpire: 0 }),
@@ -123,7 +119,7 @@ describe('Auth (e2e)', () => {
 
       // We need the real code — in tests the EmailService is mocked
       // Inject a known code directly into the DB
-      const bcrypt = require('bcrypt');
+
       const testCode = '123456';
       await prisma.otpCode.update({
         where: { id: otpRecord!.id },
@@ -144,7 +140,7 @@ describe('Auth (e2e)', () => {
         data: { email: 'test@example.com', password: 'hash' },
       });
       const user = await prisma.user.findUnique({ where: { email: 'test@example.com' } });
-      const bcrypt = require('bcrypt');
+
       await prisma.otpCode.create({
         data: {
           userId: user!.id,
@@ -166,7 +162,7 @@ describe('Auth (e2e)', () => {
 
   describe('POST /auth/login/email', () => {
     it('200 — returns tokens on valid login', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
@@ -184,7 +180,7 @@ describe('Auth (e2e)', () => {
     });
 
     it('401 — wrong password', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
@@ -201,7 +197,7 @@ describe('Auth (e2e)', () => {
     });
 
     it('403 — unverified user', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
@@ -222,7 +218,7 @@ describe('Auth (e2e)', () => {
 
   describe('POST /auth/token/refresh', () => {
     it('200 — returns new access token', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
@@ -258,7 +254,7 @@ describe('Auth (e2e)', () => {
 
   describe('POST /auth/logout', () => {
     it('200 — revokes refresh token', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
@@ -413,7 +409,7 @@ describe('Auth (e2e)', () => {
 
   describe('GET /auth/me', () => {
     it('200 — returns user profile', async () => {
-      const bcrypt = require('bcrypt');
+
       await prisma.user.create({
         data: {
           email: 'test@example.com',
