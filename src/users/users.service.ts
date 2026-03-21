@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +18,7 @@ export class UsersService {
     return this.usersRepository.findByPhone(phone);
   }
 
-  create(data: { email?: string; phone?: string; password: string }): Promise<User> {
+  create(data: { email?: string; phone?: string; password: string; role?: UserRole }): Promise<User> {
     return this.usersRepository.create(data);
   }
 
