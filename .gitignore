@@ -20,5 +20,3 @@ logs
 *.log
 npm-debug.log*
 
-# Prisma generated
-prisma/migrations
