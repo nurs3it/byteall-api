@@ -290,6 +290,125 @@ describe('Auth (e2e)', () => {
     });
   });
 
+  // ─── Register Phone ──────────────────────────────────────────────────────────
+
+  describe('POST /auth/register/phone', () => {
+    it('201 — creates user and returns OTP message', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/register/phone')
+        .send({ phone: '+77001234567', password: 'StrongPass123!' });
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.message).toBe('OTP sent to phone');
+
+      const user = await prisma.user.findUnique({ where: { phone: '+77001234567' } });
+      expect(user).not.toBeNull();
+      expect(user!.isVerified).toBe(false);
+    });
+
+    it('409 — returns conflict for verified existing phone', async () => {
+      await prisma.user.create({
+        data: { phone: '+77001234567', password: 'hash', isVerified: true },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/register/phone')
+        .send({ phone: '+77001234567', password: 'StrongPass123!' });
+
+      expect(res.status).toBe(409);
+    });
+
+    it('201 — allows re-registration for unverified phone', async () => {
+      await prisma.user.create({
+        data: { phone: '+77001234567', password: 'hash', isVerified: false },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/register/phone')
+        .send({ phone: '+77001234567', password: 'StrongPass123!' });
+
+      expect(res.status).toBe(201);
+      const users = await prisma.user.findMany({ where: { phone: '+77001234567' } });
+      expect(users.length).toBe(1);
+    });
+  });
+
+  // ─── Login Phone ─────────────────────────────────────────────────────────────
+
+  describe('POST /auth/login/phone', () => {
+    it('200 — sends OTP for verified phone user', async () => {
+      await prisma.user.create({
+        data: { phone: '+77001234567', password: 'hash', isVerified: true },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/login/phone')
+        .send({ phone: '+77001234567' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.message).toBe('OTP sent to phone');
+    });
+
+    it('401 — user not found', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/login/phone')
+        .send({ phone: '+77009999999' });
+
+      expect(res.status).toBe(401);
+    });
+
+    it('401 — unverified user', async () => {
+      await prisma.user.create({
+        data: { phone: '+77001234567', password: 'hash', isVerified: false },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/login/phone')
+        .send({ phone: '+77001234567' });
+
+      expect(res.status).toBe(401);
+    });
+  });
+
+  // ─── Resend OTP ──────────────────────────────────────────────────────────────
+
+  describe('POST /auth/otp/resend', () => {
+    it('200 — resends OTP after cooldown has passed', async () => {
+      // Register to create user and initial OTP
+      await request(app.getHttpServer())
+        .post('/auth/register/email')
+        .send({ email: 'test@example.com', password: 'StrongPass123!' });
+
+      // Backdate the OTP so the 60s cooldown has expired
+      const user = await prisma.user.findUnique({ where: { email: 'test@example.com' } });
+      await prisma.otpCode.updateMany({
+        where: { userId: user!.id },
+        data: { createdAt: new Date(Date.now() - 61000) },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/otp/resend')
+        .send({ identifier: 'test@example.com', type: 'email_verify' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.message).toBe('OTP resent');
+    });
+
+    it('429 — cooldown active (OTP created less than 60s ago)', async () => {
+      // Register to create user and fresh OTP
+      await request(app.getHttpServer())
+        .post('/auth/register/email')
+        .send({ email: 'test@example.com', password: 'StrongPass123!' });
+
+      // The OTP was just created — within the 60s cooldown window
+      const res = await request(app.getHttpServer())
+        .post('/auth/otp/resend')
+        .send({ identifier: 'test@example.com', type: 'email_verify' });
+
+      expect(res.status).toBe(429);
+    });
+  });
+
   // ─── GET /auth/me ────────────────────────────────────────────────────────────
 
   describe('GET /auth/me', () => {
