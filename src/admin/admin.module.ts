@@ -27,6 +27,7 @@ AdminJS.registerAdapter({ Database, Resource });
                   navigation: { name: 'User Management' },
                   properties: {
                     password: { isVisible: false },
+                    codeHash: { isVisible: false },
                     id: { isEditable: false },
                     email: { isEditable: false },
                     phone: { isEditable: false },
