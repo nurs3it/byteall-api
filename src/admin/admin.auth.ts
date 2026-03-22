@@ -1,10 +1,11 @@
 import * as bcrypt from 'bcrypt';
+import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface AdminSessionUser {
   id: string;
   email: string;
-  role: string;
+  role: UserRole;
   isVerified: boolean;
 }
 

@@ -14,6 +14,11 @@ AdminJS.registerAdapter({ Database, Resource });
   imports: [
     AdminJSModule.createAdminAsync({
       useFactory: async (prisma: PrismaService) => {
+        const sessionSecret = process.env.SESSION_SECRET;
+        if (!sessionSecret) {
+          throw new Error('SESSION_SECRET environment variable is not set');
+        }
+
         return {
           adminJsOptions: {
             rootPath: '/admin',
@@ -69,6 +74,9 @@ AdminJS.registerAdapter({ Database, Resource });
                 },
                 options: {
                   navigation: { name: 'Auth' },
+                  properties: {
+                    token: { isVisible: false },
+                  },
                   actions: {
                     new: { isAccessible: false },
                     edit: { isAccessible: false },
@@ -84,14 +92,12 @@ AdminJS.registerAdapter({ Database, Resource });
             authenticate: (email: string, password: string) =>
               authenticate(email, password, prisma),
             cookieName: 'adminjs',
-            cookiePassword:
-              process.env.SESSION_SECRET ?? 'fallback-secret-change-me',
+            cookiePassword: sessionSecret,
           },
           sessionOptions: {
             resave: false,
             saveUninitialized: false,
-            secret:
-              process.env.SESSION_SECRET ?? 'fallback-secret-change-me',
+            secret: sessionSecret,
           },
         };
       },
