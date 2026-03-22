@@ -9,7 +9,13 @@ import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 5 }]),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60000, limit: 5 }],
+      skipIf: (context) => {
+        const request = context.switchToHttp().getRequest();
+        return request?.url?.startsWith('/admin');
+      },
+    }),
     PrismaModule,
     AuthModule,
     AdminModule,
