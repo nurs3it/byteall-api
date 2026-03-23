@@ -1,3 +1,9 @@
+// Mock bcrypt to avoid slow real hashing in unit tests (rounds=12 takes ~15s each)
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('$hashed$'),
+  compare: jest.fn(),
+}));
+
 import { Test } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -134,11 +140,12 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue({ id: '1', email: 'a@b.com' });
       mockPrisma.otpCode.findFirst.mockResolvedValue({
         id: 'otp-1',
-        codeHash: await bcrypt.hash('999999', 10),
+        codeHash: '$hashed$',
         attempts: 0,
         expiresAt: new Date(Date.now() + 600000),
       });
       mockPrisma.otpCode.update.mockResolvedValue({});
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false); // wrong code
 
       await expect(service.verifyOtp('a@b.com', '123456', 'email_verify')).rejects.toThrow();
 
@@ -153,7 +160,7 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue({ id: '1', email: 'a@b.com' });
       mockPrisma.otpCode.findFirst.mockResolvedValue({
         id: 'otp-1',
-        codeHash: await bcrypt.hash('999999', 10),
+        codeHash: '$hashed$',
         attempts: 3,
         expiresAt: new Date(Date.now() + 600000),
       });
@@ -167,15 +174,15 @@ describe('AuthService', () => {
 
   describe('loginEmail', () => {
     it('returns tokens on valid credentials', async () => {
-      const hashedPassword = await bcrypt.hash('Pass123!', 12);
       mockUsersService.findByEmail.mockResolvedValue({
         id: '1',
         email: 'a@b.com',
-        password: hashedPassword,
+        password: '$hashed$',
         isVerified: true,
         role: 'user',
       });
       mockPrisma.refreshToken.create.mockResolvedValue({});
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true); // correct password
 
       const result = await service.loginEmail('a@b.com', 'Pass123!');
 
@@ -184,27 +191,27 @@ describe('AuthService', () => {
     });
 
     it('throws 401 on wrong password', async () => {
-      const hashedPassword = await bcrypt.hash('WrongPass!', 12);
       mockUsersService.findByEmail.mockResolvedValue({
         id: '1',
         email: 'a@b.com',
-        password: hashedPassword,
+        password: '$hashed$',
         isVerified: true,
         role: 'user',
       });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false); // wrong password
 
       await expect(service.loginEmail('a@b.com', 'Pass123!')).rejects.toThrow(UnauthorizedException);
     });
 
     it('throws 403 when user is not verified', async () => {
-      const hashedPassword = await bcrypt.hash('Pass123!', 12);
       mockUsersService.findByEmail.mockResolvedValue({
         id: '1',
         email: 'a@b.com',
-        password: hashedPassword,
+        password: '$hashed$',
         isVerified: false,
         role: 'user',
       });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true); // correct password, but unverified
 
       await expect(service.loginEmail('a@b.com', 'Pass123!')).rejects.toThrow(ForbiddenException);
     });
