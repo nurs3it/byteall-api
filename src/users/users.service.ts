@@ -29,4 +29,28 @@ export class UsersService {
   delete(id: string): Promise<User> {
     return this.usersRepository.delete(id);
   }
+
+  findAllAdmin(skip: number, take: number) {
+    return this.usersRepository.findAllAdmin(skip, take);
+  }
+
+  findByIdAdmin(id: string) {
+    return this.usersRepository.findByIdAdmin(id);
+  }
+
+  updateRole(id: string, role: UserRole) {
+    return this.usersRepository.updateRole(id, role);
+  }
+
+  findAllOtpCodes(skip: number, take: number) {
+    return this.usersRepository.findAllOtpCodes(skip, take);
+  }
+
+  findAllRefreshTokens(skip: number, take: number) {
+    return this.usersRepository.findAllRefreshTokens(skip, take);
+  }
+
+  getStats() {
+    return this.usersRepository.getStats();
+  }
 }

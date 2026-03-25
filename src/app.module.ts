@@ -4,21 +4,16 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { AdminModule } from './admin/admin.module';
-
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60000, limit: 5 }],
-      skipIf: (context) => {
-        const request = context.switchToHttp().getRequest();
-        return request?.url?.startsWith('/admin');
-      },
     }),
     PrismaModule,
     AuthModule,
-    AdminModule,
+    UsersModule,
   ],
   providers: [
     {
