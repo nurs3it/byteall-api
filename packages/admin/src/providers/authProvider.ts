@@ -89,15 +89,23 @@ export const authProvider: AuthProvider = {
   getPermissions: async () => {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.role;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role;
+    } catch {
+      return null;
+    }
   },
 
   getIdentity: async () => {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return { id: payload.sub, email: payload.email, role: payload.role };
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return { id: payload.sub, email: payload.email, role: payload.role };
+    } catch {
+      return null;
+    }
   },
 
   onError: async (error) => {

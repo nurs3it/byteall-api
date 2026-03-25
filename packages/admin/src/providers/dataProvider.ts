@@ -64,7 +64,7 @@ export const dataProvider: DataProvider = {
     // url comes as full path e.g. '/api/users/stats'
     // axiosInstance already has baseURL '/api' — strip the prefix to avoid doubling
     const { data } = await axiosInstance.request({
-      url: url.replace(API_URL, ''),
+      url: url.startsWith(API_URL) ? url.slice(API_URL.length) : url,
       method,
       data: payload,
     });
