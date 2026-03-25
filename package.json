@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "workspaces": ["packages/*"],
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -20,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@adminjs/nestjs": "^7.0.0",
+    "@adminjs/nestjs": "^6.1.0",
     "@adminjs/prisma": "^5.0.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
