@@ -32,9 +32,16 @@ services:
       - '3000:3000'
     env_file:
       - .env
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./packages/admin
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
     depends_on:
-      postgres:
-        condition: service_healthy
+      - api
     restart: unless-stopped
 
 volumes:
