@@ -1,9 +1,10 @@
 import { useEditor, EditorContent } from '@tiptap/react';
+import { useEffect } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
-import { Button, Upload, Space, Divider } from 'antd';
+import { Button, Upload, Space, Divider, message } from 'antd';
 import {
   BoldOutlined, ItalicOutlined, UnderlineOutlined,
   OrderedListOutlined, UnorderedListOutlined, LinkOutlined, PictureOutlined,
@@ -32,17 +33,27 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
     },
   });
 
+  useEffect(() => {
+    if (editor && value !== undefined && editor.getHTML() !== value) {
+      editor.commands.setContent(value);
+    }
+  }, [editor, value]);
+
   if (!editor) return null;
 
   const uploadImage = async (file: File) => {
     const token = localStorage.getItem('access_token');
     const formData = new FormData();
     formData.append('file', file);
-    const { data } = await axios.post(`${apiUrl}/uploads/image?folder=content`, formData, {
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
-    });
-    const url = data?.data?.url ?? data?.url;
-    if (url) editor.chain().focus().setImage({ src: url }).run();
+    try {
+      const { data } = await axios.post(`${apiUrl}/uploads/image?folder=content`, formData, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+      });
+      const url = data?.data?.url ?? data?.url;
+      if (url) editor.chain().focus().setImage({ src: url }).run();
+    } catch {
+      void message.error('Не удалось загрузить изображение');
+    }
     return false; // prevent default upload
   };
 
@@ -92,7 +103,9 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
             size="small" icon={<LinkOutlined />}
             onClick={() => {
               const url = window.prompt('URL ссылки');
-              if (url) editor.chain().focus().setLink({ href: url }).run();
+              if (url && url.trim()) {
+                editor.chain().focus().setLink({ href: url.trim() }).run();
+              }
             }}
           />
           <Upload showUploadList={false} beforeUpload={uploadImage} accept="image/*">
