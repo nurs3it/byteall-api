@@ -11,7 +11,16 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@tiptap/core": ["./node_modules/@tiptap/core"],
+      "@tiptap/react": ["./node_modules/@tiptap/react"],
+      "@tiptap/starter-kit": ["./node_modules/@tiptap/starter-kit"],
+      "@tiptap/extension-underline": ["./node_modules/@tiptap/extension-underline"],
+      "@tiptap/extension-image": ["./node_modules/@tiptap/extension-image"],
+      "@tiptap/extension-link": ["./node_modules/@tiptap/extension-link"]
+    }
   },
   "include": ["src"]
 }
