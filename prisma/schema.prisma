@@ -28,6 +28,7 @@ model User {
   updatedAt    DateTime       @updatedAt @map("updated_at")
   otpCodes     OtpCode[]
   refreshTokens RefreshToken[]
+  posts        Post[]
 
   @@map("users")
 }
@@ -58,4 +59,58 @@ model RefreshToken {
 
   @@index([userId, revoked])
   @@map("refresh_tokens")
+}
+
+enum PostStatus {
+  draft
+  published
+}
+
+model Post {
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  content     String
+  coverUrl    String?    @map("cover_url")
+  status      PostStatus @default(draft)
+  authorId    String     @map("author_id")
+  categoryId  String?    @map("category_id")
+  publishedAt DateTime?  @map("published_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags     PostTag[]
+
+  @@map("posts")
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id    String    @id @default(uuid())
+  name  String    @unique
+  slug  String    @unique
+  posts PostTag[]
+
+  @@map("tags")
+}
+
+model PostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
 }
