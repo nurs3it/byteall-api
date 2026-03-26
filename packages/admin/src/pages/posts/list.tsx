@@ -1,12 +1,14 @@
 import { useTable } from '@refinedev/antd';
-import { useUpdate } from '@refinedev/core';
+import { useCustomMutation, useApiUrl, useInvalidate } from '@refinedev/core';
 import { Table, Tag, Select, Space } from 'antd';
 import { EditButton, DeleteButton } from '@refinedev/antd';
 import dayjs from 'dayjs';
 
 export const PostList = () => {
   const { tableProps } = useTable({ resource: 'posts/admin', syncWithLocation: true });
-  const { mutate: updateStatus } = useUpdate();
+  const { mutate: patchStatus } = useCustomMutation();
+  const apiUrl = useApiUrl();
+  const invalidate = useInvalidate();
 
   return (
     <Table {...tableProps} rowKey="id">
@@ -32,9 +34,12 @@ export const PostList = () => {
             value={status}
             size="small"
             style={{ width: 130 }}
-            onChange={(val) =>
-              updateStatus({ resource: 'posts', id: `${record.id}/status`, values: { status: val } })
-            }
+            onChange={(val) => {
+              patchStatus(
+                { url: `${apiUrl}/posts/${record.id}/status`, method: 'patch', values: { status: val } },
+                { onSuccess: () => invalidate({ resource: 'posts/admin', invalidates: ['list'] }) },
+              );
+            }}
             options={[
               { value: 'draft', label: <Tag color="default">Черновик</Tag> },
               { value: 'published', label: <Tag color="green">Опубликован</Tag> },

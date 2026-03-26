@@ -29,7 +29,7 @@ export const PostCreate = () => {
   };
 
   return (
-    <Create saveButtonProps={saveButtonProps}
+    <Create
       footerButtons={
         <Row gutter={8}>
           <Col>

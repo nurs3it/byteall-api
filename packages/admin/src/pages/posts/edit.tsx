@@ -29,7 +29,7 @@ export const PostEdit = () => {
   };
 
   return (
-    <Edit saveButtonProps={saveButtonProps}
+    <Edit
       footerButtons={
         <Row gutter={8}>
           <Col>
