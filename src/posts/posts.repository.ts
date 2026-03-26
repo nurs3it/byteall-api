@@ -126,13 +126,21 @@ export class PostsRepository {
     return post ? mapPost(post) : null;
   }
 
-  updateStatus(id: string, status: PostStatus) {
-    const publishedAt = status === PostStatus.published ? new Date() : null;
-    return this.prisma.post.update({
+  async updateStatus(id: string, status: PostStatus) {
+    const current = await this.prisma.post.findUnique({ where: { id }, select: { status: true, publishedAt: true } });
+    const publishedAt =
+      status === PostStatus.published && current?.status !== PostStatus.published
+        ? new Date()
+        : status === PostStatus.draft
+          ? null
+          : undefined;
+
+    const post = await this.prisma.post.update({
       where: { id },
-      data: { status, publishedAt },
+      data: { status, ...(publishedAt !== undefined && { publishedAt }) },
       include: POST_INCLUDE,
-    }).then(mapPost);
+    });
+    return mapPost(post);
   }
 
   delete(id: string) {
@@ -145,13 +153,15 @@ export class PostsRepository {
 
   async generateSlug(title: string): Promise<string> {
     const base = slugify(title, { lower: true, strict: true });
-    const existing = await this.prisma.post.findMany({
-      where: { slug: { startsWith: base } },
-      select: { slug: true },
-    });
-    if (!existing.find((p) => p.slug === base)) return base;
+    const exists = await this.prisma.post.findUnique({ where: { slug: base }, select: { id: true } });
+    if (!exists) return base;
     let i = 2;
-    while (existing.find((p) => p.slug === `${base}-${i}`)) i++;
-    return `${base}-${i}`;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const candidate = `${base}-${i}`;
+      const taken = await this.prisma.post.findUnique({ where: { slug: candidate }, select: { id: true } });
+      if (!taken) return candidate;
+      i++;
+    }
   }
 }
