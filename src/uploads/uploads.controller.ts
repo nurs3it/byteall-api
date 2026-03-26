@@ -1,6 +1,6 @@
 import {
   Controller, Post, UseGuards, UseInterceptors,
-  UploadedFile, Query,
+  UploadedFile, Query, ParseFilePipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -20,7 +20,7 @@ export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
   @Post('image')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 5 * 1024 * 1024 } }))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -30,7 +30,7 @@ export class UploadsController {
   })
   @ApiOperation({ summary: 'Upload image to Supabase Storage' })
   uploadImage(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true })) file: Express.Multer.File,
     @CurrentUser() user: User,
     @Query('folder') folder: 'covers' | 'content' = 'content',
   ) {
