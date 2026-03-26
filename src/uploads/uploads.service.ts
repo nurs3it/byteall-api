@@ -16,10 +16,11 @@ export class UploadsService {
   private supabase: SupabaseClient;
 
   constructor(private readonly config: ConfigService) {
-    this.supabase = createClient(
-      this.config.getOrThrow('SUPABASE_URL'),
-      this.config.getOrThrow('SUPABASE_SERVICE_KEY'),
-    );
+    const url = this.config.get<string>('SUPABASE_URL');
+    const key = this.config.get<string>('SUPABASE_SERVICE_KEY');
+    if (url && key) {
+      this.supabase = createClient(url, key);
+    }
   }
 
   async uploadImage(
@@ -27,6 +28,9 @@ export class UploadsService {
     userId: string,
     folder: 'covers' | 'content',
   ): Promise<{ url: string }> {
+    if (!this.supabase) {
+      throw new InternalServerErrorException('Storage is not configured (SUPABASE_URL / SUPABASE_SERVICE_KEY missing)');
+    }
     if (!['covers', 'content'].includes(folder)) {
       throw new BadRequestException('Invalid folder');
     }
