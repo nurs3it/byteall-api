@@ -79,10 +79,12 @@ model Post {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Restrict)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   tags     PostTag[]
 
+  @@index([authorId])
+  @@index([status, publishedAt])
   @@map("posts")
 }
 
@@ -111,6 +113,7 @@ model PostTag {
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
+  @@index([tagId])
   @@id([postId, tagId])
   @@map("post_tags")
 }
