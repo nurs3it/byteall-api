@@ -1,6 +1,6 @@
 import {
   Controller, Get, Patch, Param, Body, Query,
-  UseGuards, DefaultValuePipe, ParseIntPipe, Res,
+  UseGuards, DefaultValuePipe, ParseIntPipe, ParseEnumPipe, Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -28,7 +28,7 @@ export class PostsAdminController {
     @Query('_start', new DefaultValuePipe(0), ParseIntPipe) start: number,
     @Query('_end', new DefaultValuePipe(10), ParseIntPipe) end: number,
     @Res({ passthrough: true }) res: Response,
-    @Query('status') status?: PostStatus,
+    @Query('status', new ParseEnumPipe(PostStatus, { optional: true })) status?: PostStatus,
     @Query('categoryId') categoryId?: string,
   ) {
     const { data, total } = await this.postsService.findAllAdmin(start, end - start, status, categoryId);

@@ -64,7 +64,7 @@ export class PostsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create post' })
   create(@Body() dto: CreatePostDto, @CurrentUser() user: User) {
-    return this.postsService.create(dto, user.id);
+    return this.postsService.create(dto, user.id, user.role);
   }
 
   @Patch(':id')

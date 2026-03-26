@@ -23,14 +23,18 @@ export class PostsService {
     return this.repo.findByAuthor(authorId, start, take);
   }
 
-  async create(dto: CreatePostDto, authorId: string) {
+  async create(dto: CreatePostDto, authorId: string, requesterRole: UserRole) {
     const slug = await this.repo.generateSlug(dto.title);
+    // Only admin can create directly as published
+    const status = requesterRole === UserRole.admin && dto.status === PostStatus.published
+      ? PostStatus.published
+      : PostStatus.draft;
     return this.repo.create({
       title: dto.title,
       slug,
       content: dto.content,
       coverUrl: dto.coverUrl,
-      status: dto.status ?? PostStatus.draft,
+      status,
       authorId,
       categoryId: dto.categoryId,
       tagIds: dto.tagIds,
