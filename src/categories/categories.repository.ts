@@ -14,6 +14,10 @@ export class CategoriesRepository {
     return this.prisma.category.findUnique({ where: { id } });
   }
 
+  findBySlug(slug: string) {
+    return this.prisma.category.findUnique({ where: { slug } });
+  }
+
   create(name: string, slug: string) {
     return this.prisma.category.create({ data: { id: randomUUID(), name, slug } });
   }

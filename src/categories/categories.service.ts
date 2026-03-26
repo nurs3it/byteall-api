@@ -13,8 +13,8 @@ export class CategoriesService {
 
   async create(dto: CreateCategoryDto) {
     const slug = slugify(dto.name, { lower: true, strict: true });
-    const existing = await this.repo.findAll();
-    if (existing.some((c) => c.slug === slug)) {
+    const existing = await this.repo.findBySlug(slug);
+    if (existing) {
       throw new ConflictException('Category with this name already exists');
     }
     return this.repo.create(dto.name, slug);
