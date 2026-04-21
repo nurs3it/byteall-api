@@ -34,6 +34,7 @@ export class PostsService {
       slug,
       content: dto.content,
       coverUrl: dto.coverUrl,
+      authorName: dto.authorName,
       status,
       authorId,
       categoryId: dto.categoryId,
@@ -61,6 +62,10 @@ export class PostsService {
 
   findAllAdmin(start: number, take: number, status?: PostStatus, categoryId?: string) {
     return this.repo.findAllAdmin(start, take, status, categoryId);
+  }
+
+  getStats() {
+    return this.repo.getStats();
   }
 
   async updateStatus(id: string, dto: UpdatePostStatusDto) {

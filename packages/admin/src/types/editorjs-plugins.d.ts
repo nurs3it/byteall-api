@@ -1,0 +1,16 @@
+declare module '@editorjs/embed';
+declare module '@editorjs/marker';
+declare module '@editorjs/underline';
+declare module '@editorjs/inline-code';
+declare module '@editorjs/delimiter';
+declare module '@editorjs/attaches';
+declare module '@editorjs/checklist';
+declare module '@editorjs/raw';
+declare module '@editorjs/warning';
+declare module '@editorjs/link';
+declare module '@editorjs/nested-list';
+declare module 'editorjs-drag-drop';
+declare module 'editorjs-undo';
+declare module 'editorjs-change-case';
+declare module 'editorjs-paragraph-with-alignment';
+declare module 'editorjs-text-color-plugin';

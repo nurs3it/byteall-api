@@ -22,6 +22,12 @@ export class CreatePostDto {
   @IsUrl()
   coverUrl?: string;
 
+  @ApiPropertyOptional({ example: 'Иван Иванов' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  authorName?: string;
+
   @ApiPropertyOptional({ example: 'uuid-of-category' })
   @IsOptional()
   @IsUUID()

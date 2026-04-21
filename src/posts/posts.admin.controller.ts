@@ -22,6 +22,12 @@ export class PostsAdminController {
   // NOTE: this controller must be listed FIRST in PostsModule.controllers
   // to prevent /posts/:slug from swallowing /posts/admin
 
+  @Get('admin/stats')
+  @ApiOperation({ summary: 'Get posts statistics for dashboard' })
+  getStats() {
+    return this.postsService.getStats();
+  }
+
   @Get('admin')
   @ApiOperation({ summary: 'List all posts for admin panel' })
   async findAll(

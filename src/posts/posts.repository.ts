@@ -77,7 +77,7 @@ export class PostsRepository {
   }
 
   async create(data: {
-    title: string; slug: string; content: string; coverUrl?: string;
+    title: string; slug: string; content: string; coverUrl?: string; authorName?: string;
     status: PostStatus; authorId: string; categoryId?: string; tagIds?: string[];
   }) {
     const { tagIds, ...rest } = data;
@@ -96,7 +96,7 @@ export class PostsRepository {
   }
 
   async update(id: string, data: {
-    title?: string; content?: string; coverUrl?: string;
+    title?: string; content?: string; coverUrl?: string; authorName?: string;
     status?: PostStatus; categoryId?: string; tagIds?: string[];
   }) {
     const { tagIds, status, ...rest } = data;
@@ -149,6 +149,17 @@ export class PostsRepository {
 
   findById(id: string) {
     return this.prisma.post.findUnique({ where: { id }, select: { id: true, authorId: true } });
+  }
+
+  async getStats() {
+    const [total, published, draft, categories, tags] = await this.prisma.$transaction([
+      this.prisma.post.count(),
+      this.prisma.post.count({ where: { status: PostStatus.published } }),
+      this.prisma.post.count({ where: { status: PostStatus.draft } }),
+      this.prisma.category.count(),
+      this.prisma.tag.count(),
+    ]);
+    return { total, published, draft, categories, tags };
   }
 
   async generateSlug(title: string): Promise<string> {

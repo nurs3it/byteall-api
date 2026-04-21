@@ -72,6 +72,7 @@ model Post {
   slug        String     @unique
   content     String
   coverUrl    String?    @map("cover_url")
+  authorName  String?    @map("author_name")
   status      PostStatus @default(draft)
   authorId    String     @map("author_id")
   categoryId  String?    @map("category_id")

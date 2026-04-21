@@ -1,7 +1,6 @@
-import { useTable } from '@refinedev/antd';
+import { useTable, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { useCustomMutation, useApiUrl, useInvalidate } from '@refinedev/core';
 import { Table, Tag, Select, Space } from 'antd';
-import { EditButton, DeleteButton } from '@refinedev/antd';
 import dayjs from 'dayjs';
 
 export const PostList = () => {
@@ -11,6 +10,10 @@ export const PostList = () => {
   const invalidate = useInvalidate();
 
   return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <CreateButton resource="posts/admin" />
+      </div>
     <Table {...tableProps} rowKey="id">
       <Table.Column dataIndex="title" title="Заголовок" />
       <Table.Column
@@ -61,5 +64,6 @@ export const PostList = () => {
         )}
       />
     </Table>
+    </>
   );
 };
