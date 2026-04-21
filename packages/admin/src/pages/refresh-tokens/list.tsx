@@ -9,7 +9,7 @@ export const RefreshTokenList = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column
           title="Пользователь"
-          render={(_, record: any) => record?.user?.email ?? record?.user?.phone ?? '—'}
+          render={(_, record: any) => record?.user?.email ?? '—'}
         />
         <Table.Column
           dataIndex="revoked"

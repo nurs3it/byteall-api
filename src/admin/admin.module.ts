@@ -32,10 +32,8 @@ AdminJS.registerAdapter({ Database, Resource });
                   navigation: { name: 'User Management' },
                   properties: {
                     password: { isVisible: false },
-                    codeHash: { isVisible: false },
                     id: { isEditable: false },
                     email: { isEditable: false },
-                    phone: { isEditable: false },
                     createdAt: { isEditable: false },
                     updatedAt: { isEditable: false },
                   },
@@ -44,25 +42,6 @@ AdminJS.registerAdapter({ Database, Resource });
                     list: { isAccessible: canPerformAction },
                     show: { isAccessible: canPerformAction },
                     edit: { isAccessible: canPerformAction },
-                    delete: { isAccessible: canPerformAction },
-                  },
-                },
-              },
-              {
-                resource: {
-                  model: getModelByName('OtpCode'),
-                  client: prisma as unknown as PrismaClient,
-                },
-                options: {
-                  navigation: { name: 'Auth' },
-                  properties: {
-                    codeHash: { isVisible: false },
-                  },
-                  actions: {
-                    new: { isAccessible: false },
-                    edit: { isAccessible: false },
-                    list: { isAccessible: canPerformAction },
-                    show: { isAccessible: canPerformAction },
                     delete: { isAccessible: canPerformAction },
                   },
                 },

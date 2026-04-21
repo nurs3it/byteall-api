@@ -16,7 +16,6 @@ import { dataProvider } from './providers/dataProvider';
 
 import { DashboardPage } from './pages/dashboard';
 import { UserList, UserShow, UserEdit } from './pages/users';
-import { OtpCodeList } from './pages/otp-codes/list';
 import { RefreshTokenList } from './pages/refresh-tokens/list';
 import { LoginPage } from './pages/login';
 import { ForbiddenPage } from './pages/forbidden';
@@ -27,7 +26,6 @@ import { TagList } from './pages/tags';
 import {
   DashboardOutlined,
   UserOutlined,
-  SafetyOutlined,
   KeyOutlined,
   FileTextOutlined,
   AppstoreOutlined,
@@ -114,11 +112,6 @@ export default function App() {
                 meta: { label: 'Пользователи', icon: <UserOutlined />, parent: 'users-group' },
               },
               {
-                name: 'users/otp-codes',
-                list: '/otp-codes',
-                meta: { label: 'OTP Коды', icon: <SafetyOutlined />, parent: 'users-group' },
-              },
-              {
                 name: 'users/refresh-tokens',
                 list: '/refresh-tokens',
                 meta: { label: 'Refresh Токены', icon: <KeyOutlined />, parent: 'users-group' },
@@ -169,7 +162,6 @@ export default function App() {
                 <Route path="/users" element={<UserList />} />
                 <Route path="/users/:id" element={<UserShow />} />
                 <Route path="/users/:id/edit" element={<UserEdit />} />
-                <Route path="/otp-codes" element={<OtpCodeList />} />
                 <Route path="/refresh-tokens" element={<RefreshTokenList />} />
                 <Route path="/posts" element={<PostList />} />
                 <Route path="/posts/create" element={<PostCreate />} />

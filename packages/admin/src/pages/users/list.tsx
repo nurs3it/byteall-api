@@ -7,19 +7,13 @@ export const UserList = () => {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="email" title="Email" render={(v) => v ?? '—'} />
-        <Table.Column dataIndex="phone" title="Телефон" render={(v) => v ?? '—'} />
+        <Table.Column dataIndex="email" title="Email" />
         <Table.Column
           dataIndex="role"
           title="Роль"
           render={(role) => (
             <Tag color={role === 'admin' ? 'red' : 'blue'}>{role}</Tag>
           )}
-        />
-        <Table.Column
-          dataIndex="isVerified"
-          title="Подтверждён"
-          render={(v) => <Tag color={v ? 'green' : 'orange'}>{v ? 'Да' : 'Нет'}</Tag>}
         />
         <Table.Column
           dataIndex="createdAt"

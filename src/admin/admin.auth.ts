@@ -6,7 +6,6 @@ export interface AdminSessionUser {
   id: string;
   email: string;
   role: UserRole;
-  isVerified: boolean;
 }
 
 export async function authenticate(
@@ -26,6 +25,5 @@ export async function authenticate(
     id: user.id,
     email: user.email,
     role: user.role,
-    isVerified: user.isVerified,
   };
 }

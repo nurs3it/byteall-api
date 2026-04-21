@@ -14,11 +14,7 @@ export class UsersService {
     return this.usersRepository.findByEmail(email);
   }
 
-  findByPhone(phone: string): Promise<User | null> {
-    return this.usersRepository.findByPhone(phone);
-  }
-
-  create(data: { email?: string; phone?: string; password: string; role?: UserRole }): Promise<User> {
+  create(data: { email: string; password: string; role?: UserRole }): Promise<User> {
     return this.usersRepository.create(data);
   }
 
@@ -40,10 +36,6 @@ export class UsersService {
 
   updateRole(id: string, role: UserRole) {
     return this.usersRepository.updateRole(id, role);
-  }
-
-  findAllOtpCodes(skip: number, take: number) {
-    return this.usersRepository.findAllOtpCodes(skip, take);
   }
 
   findAllRefreshTokens(skip: number, take: number) {

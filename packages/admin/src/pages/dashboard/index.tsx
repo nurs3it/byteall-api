@@ -7,16 +7,12 @@ import {
   Spin,
   Typography,
   Progress,
-  List,
   Avatar,
-  Tag,
   Divider,
 } from 'antd';
 import {
   UserOutlined,
-  SafetyOutlined,
   KeyOutlined,
-  MailOutlined,
   FileTextOutlined,
   AppstoreOutlined,
   TagsOutlined,
@@ -29,9 +25,7 @@ const { Title, Text } = Typography;
 
 interface Stats {
   totalUsers: number;
-  verifiedUsers: number;
   activeTokens: number;
-  otpToday: number;
 }
 
 interface PostStats {
@@ -70,11 +64,6 @@ export const DashboardPage = () => {
     return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />;
   }
 
-  const verifiedPercent =
-    stats?.totalUsers && stats.totalUsers > 0
-      ? Math.round((stats.verifiedUsers / stats.totalUsers) * 100)
-      : 0;
-
   const publishedPercent =
     postStats?.total && postStats.total > 0
       ? Math.round((postStats.published / postStats.total) * 100)
@@ -91,7 +80,7 @@ export const DashboardPage = () => {
         Пользователи
       </Text>
       <Row gutter={[16, 16]} style={{ marginTop: 8, marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card style={cardStyle}>
             <Statistic
               title="Всего пользователей"
@@ -101,43 +90,13 @@ export const DashboardPage = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={cardStyle}>
-            <Statistic
-              title="Подтверждённые"
-              value={stats?.verifiedUsers ?? 0}
-              prefix={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-            <Progress
-              percent={verifiedPercent}
-              size="small"
-              strokeColor="#52c41a"
-              style={{ marginTop: 8 }}
-              showInfo={false}
-            />
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {verifiedPercent}% верифицировано
-            </Text>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <Card style={cardStyle}>
             <Statistic
               title="Активных сессий"
               value={stats?.activeTokens ?? 0}
               prefix={<KeyOutlined style={{ color: '#faad14' }} />}
               valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card style={cardStyle}>
-            <Statistic
-              title="OTP сегодня"
-              value={stats?.otpToday ?? 0}
-              prefix={<MailOutlined style={{ color: '#eb2f96' }} />}
-              valueStyle={{ color: '#eb2f96' }}
             />
           </Card>
         </Col>
@@ -230,7 +189,6 @@ export const DashboardPage = () => {
           { icon: <FileTextOutlined />, label: 'Статьи', href: '/posts', color: '#722ed1', desc: 'Создание и редактирование' },
           { icon: <AppstoreOutlined />, label: 'Категории', href: '/categories', color: '#13c2c2', desc: 'Разделы контента' },
           { icon: <TagsOutlined />, label: 'Теги', href: '/tags', color: '#fa8c16', desc: 'Метки для фильтрации' },
-          { icon: <SafetyOutlined />, label: 'OTP Коды', href: '/otp-codes', color: '#eb2f96', desc: 'Коды подтверждения' },
           { icon: <KeyOutlined />, label: 'Токены', href: '/refresh-tokens', color: '#faad14', desc: 'Активные сессии' },
         ].map(({ icon, label, href, color, desc }) => (
           <Col xs={12} sm={8} lg={4} key={href}>

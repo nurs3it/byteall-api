@@ -11,41 +11,17 @@ enum UserRole {
   admin
 }
 
-enum OtpType {
-  email_verify
-  phone_verify
-  phone_login
-}
-
 model User {
   id           String         @id @default(uuid())
-  email        String?        @unique
-  phone        String?        @unique
+  email        String         @unique
   password     String
   role         UserRole       @default(user)
-  isVerified   Boolean        @default(false) @map("is_verified")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
-  otpCodes     OtpCode[]
   refreshTokens RefreshToken[]
   posts        Post[]
 
   @@map("users")
-}
-
-model OtpCode {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  codeHash  String   @map("code_hash")
-  type      OtpType
-  expiresAt DateTime @map("expires_at")
-  used      Boolean  @default(false)
-  attempts  Int      @default(0)
-  createdAt DateTime @default(now()) @map("created_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, used, expiresAt])
-  @@map("otp_codes")
 }
 
 model RefreshToken {

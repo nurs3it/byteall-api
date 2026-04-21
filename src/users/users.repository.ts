@@ -14,13 +14,8 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  findByPhone(phone: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { phone } });
-  }
-
   create(data: {
-    email?: string;
-    phone?: string;
+    email: string;
     password: string;
     role?: UserRole;
   }): Promise<User> {
@@ -44,9 +39,7 @@ export class UsersRepository {
         select: {
           id: true,
           email: true,
-          phone: true,
           role: true,
-          isVerified: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -62,9 +55,7 @@ export class UsersRepository {
       select: {
         id: true,
         email: true,
-        phone: true,
         role: true,
-        isVerified: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -78,26 +69,11 @@ export class UsersRepository {
       select: {
         id: true,
         email: true,
-        phone: true,
         role: true,
-        isVerified: true,
         createdAt: true,
         updatedAt: true,
       },
     });
-  }
-
-  async findAllOtpCodes(skip: number, take: number) {
-    const [data, total] = await Promise.all([
-      this.prisma.otpCode.findMany({
-        skip,
-        take,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { email: true, phone: true } } },
-      }),
-      this.prisma.otpCode.count(),
-    ]);
-    return { data, total };
   }
 
   async findAllRefreshTokens(skip: number, take: number) {
@@ -106,7 +82,7 @@ export class UsersRepository {
         skip,
         take,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { email: true, phone: true } } },
+        include: { user: { select: { email: true } } },
       }),
       this.prisma.refreshToken.count(),
     ]);
@@ -114,16 +90,12 @@ export class UsersRepository {
   }
 
   async getStats() {
-    const [totalUsers, verifiedUsers, activeTokens, otpToday] = await Promise.all([
+    const [totalUsers, activeTokens] = await Promise.all([
       this.prisma.user.count(),
-      this.prisma.user.count({ where: { isVerified: true } }),
       this.prisma.refreshToken.count({
         where: { revoked: false, expiresAt: { gt: new Date() } },
       }),
-      this.prisma.otpCode.count({
-        where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
-      }),
     ]);
-    return { totalUsers, verifiedUsers, activeTokens, otpToday };
+    return { totalUsers, activeTokens };
   }
 }

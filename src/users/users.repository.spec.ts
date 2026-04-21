@@ -42,13 +42,4 @@ describe('UsersRepository', () => {
       expect(result).toBeNull();
     });
   });
-
-  describe('findByPhone', () => {
-    it('returns user when found', async () => {
-      const user = { id: '1', phone: '+7700' };
-      mockPrisma.user.findUnique.mockResolvedValue(user);
-      const result = await repo.findByPhone('+7700');
-      expect(result).toEqual(user);
-    });
-  });
 });

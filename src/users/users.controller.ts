@@ -48,19 +48,6 @@ export class UsersController {
     return this.usersService.getStats();
   }
 
-  @Get('otp-codes')
-  @ApiOperation({ summary: 'List all OTP codes (admin only)' })
-  async findAllOtpCodes(
-    @Query('_start', new DefaultValuePipe(0), ParseIntPipe) start: number,
-    @Query('_end', new DefaultValuePipe(10), ParseIntPipe) end: number,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const take = end - start;
-    const { data, total } = await this.usersService.findAllOtpCodes(start, take);
-    res.setHeader('X-Total-Count', total);
-    return data;
-  }
-
   @Get('refresh-tokens')
   @ApiOperation({ summary: 'List all refresh tokens (admin only)' })
   async findAllRefreshTokens(
