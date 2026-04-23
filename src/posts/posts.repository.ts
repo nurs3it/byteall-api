@@ -77,7 +77,7 @@ export class PostsRepository {
   }
 
   async create(data: {
-    title: string; slug: string; content: string; coverUrl?: string; authorName?: string;
+    title: string; slug: string; content: string; excerpt?: string; coverUrl?: string; authorName?: string;
     status: PostStatus; authorId: string; categoryId?: string; tagIds?: string[];
   }) {
     const { tagIds, ...rest } = data;
@@ -96,7 +96,7 @@ export class PostsRepository {
   }
 
   async update(id: string, data: {
-    title?: string; content?: string; coverUrl?: string; authorName?: string;
+    title?: string; content?: string; excerpt?: string; coverUrl?: string; authorName?: string;
     status?: PostStatus; categoryId?: string; tagIds?: string[];
   }) {
     const { tagIds, status, ...rest } = data;
@@ -141,6 +141,10 @@ export class PostsRepository {
       include: POST_INCLUDE,
     });
     return mapPost(post);
+  }
+
+  setLinkedInPostId(id: string, linkedinPostId: string) {
+    return this.prisma.post.update({ where: { id }, data: { linkedinPostId } });
   }
 
   delete(id: string) {

@@ -9,6 +9,10 @@ import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { PostsModule } from './posts/posts.module';
+import { VacanciesModule } from './vacancies/vacancies.module';
+import { ApplicationsModule } from './applications/applications.module';
+import { InquiriesModule } from './inquiries/inquiries.module';
+import { LinkedInModule } from './linkedin/linkedin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -22,6 +26,10 @@ import { PostsModule } from './posts/posts.module';
     TagsModule,
     UploadsModule,
     PostsModule,
+    VacanciesModule,
+    ApplicationsModule,
+    InquiriesModule,
+    LinkedInModule,
   ],
   providers: [
     {

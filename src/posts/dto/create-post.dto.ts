@@ -1,9 +1,10 @@
 import {
-  IsArray, IsEnum, IsNotEmpty, IsOptional,
+  IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional,
   IsString, IsUrl, IsUUID, MaxLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PostStatus } from '@prisma/client';
+import { Transform } from 'class-transformer';
 
 export class CreatePostDto {
   @ApiProperty({ example: 'My first article' })
@@ -16,6 +17,12 @@ export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @ApiPropertyOptional({ example: 'Short description for social sharing and SEO' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  excerpt?: string;
 
   @ApiPropertyOptional({ example: 'https://storage.supabase.co/...' })
   @IsOptional()
@@ -43,4 +50,10 @@ export class CreatePostDto {
   @IsOptional()
   @IsEnum(PostStatus)
   status?: PostStatus;
+
+  @ApiPropertyOptional({ example: true, description: 'Share to LinkedIn on publish' })
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true' || value === true)
+  shareToLinkedIn?: boolean;
 }

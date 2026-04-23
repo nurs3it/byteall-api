@@ -22,6 +22,10 @@ import { ForbiddenPage } from './pages/forbidden';
 import { PostList, PostCreate, PostEdit } from './pages/posts';
 import { CategoryList } from './pages/categories';
 import { TagList } from './pages/tags';
+import { VacancyList, VacancyCreate, VacancyEdit } from './pages/vacancies';
+import { ApplicationList, ApplicationShow } from './pages/applications';
+import { InquiryList, InquiryShow } from './pages/inquiries';
+import { LinkedInSettings } from './pages/settings/linkedin';
 
 import {
   DashboardOutlined,
@@ -30,6 +34,11 @@ import {
   FileTextOutlined,
   AppstoreOutlined,
   TagsOutlined,
+  SolutionOutlined,
+  TeamOutlined,
+  MessageOutlined,
+  SettingOutlined,
+  LinkedinOutlined,
 } from '@ant-design/icons';
 
 const i18nProvider: I18nProvider = {
@@ -137,6 +146,38 @@ export default function App() {
                 list: '/tags',
                 meta: { label: 'Теги', icon: <TagsOutlined />, parent: 'news' },
               },
+              {
+                name: 'careers',
+                meta: { label: 'Карьера', icon: <TeamOutlined /> },
+              },
+              {
+                name: 'vacancies/admin',
+                list: '/vacancies',
+                create: '/vacancies/create',
+                edit: '/vacancies/:id/edit',
+                meta: { label: 'Вакансии', icon: <SolutionOutlined />, parent: 'careers' },
+              },
+              {
+                name: 'applications/admin',
+                list: '/applications',
+                show: '/applications/:id',
+                meta: { label: 'Заявки', icon: <TeamOutlined />, parent: 'careers' },
+              },
+              {
+                name: 'inquiries/admin',
+                list: '/inquiries',
+                show: '/inquiries/:id',
+                meta: { label: 'Обращения', icon: <MessageOutlined /> },
+              },
+              {
+                name: 'settings',
+                meta: { label: 'Настройки', icon: <SettingOutlined /> },
+              },
+              {
+                name: 'settings/linkedin',
+                list: '/settings/linkedin',
+                meta: { label: 'LinkedIn', icon: <LinkedinOutlined />, parent: 'settings' },
+              },
             ]}
             options={{ syncWithLocation: true, warnWhenUnsavedChanges: true }}
           >
@@ -168,6 +209,14 @@ export default function App() {
                 <Route path="/posts/:id/edit" element={<PostEdit />} />
                 <Route path="/categories" element={<CategoryList />} />
                 <Route path="/tags" element={<TagList />} />
+                <Route path="/vacancies" element={<VacancyList />} />
+                <Route path="/vacancies/create" element={<VacancyCreate />} />
+                <Route path="/vacancies/:id/edit" element={<VacancyEdit />} />
+                <Route path="/applications" element={<ApplicationList />} />
+                <Route path="/applications/:id" element={<ApplicationShow />} />
+                <Route path="/inquiries" element={<InquiryList />} />
+                <Route path="/inquiries/:id" element={<InquiryShow />} />
+                <Route path="/settings/linkedin" element={<LinkedInSettings />} />
                 <Route path="/403" element={<ForbiddenPage />} />
               </Route>
               <Route path="/login" element={<LoginPage />} />

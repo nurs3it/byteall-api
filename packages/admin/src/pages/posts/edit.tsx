@@ -1,6 +1,6 @@
 import { Edit, useForm, useSelect } from '@refinedev/antd';
-import { Form, Input, Select, Upload, Button, Row, Col, Image, message } from 'antd';
-import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Upload, Button, Row, Col, Image, message, Checkbox, Divider, Alert } from 'antd';
+import { UploadOutlined, PlusOutlined, LinkedinOutlined } from '@ant-design/icons';
 import { useApiUrl, useCreate, useInvalidate } from '@refinedev/core';
 import { RichTextEditor } from '../../components/RichTextEditor';
 import axios from 'axios';
@@ -171,8 +171,38 @@ export const PostEdit = () => {
           />
         </Form.Item>
 
+        <Form.Item
+          name="excerpt"
+          label="Краткое описание (для LinkedIn и SEO)"
+          extra="До 300 символов. Используется при шаринге в LinkedIn и как meta description."
+        >
+          <Input.TextArea
+            rows={3}
+            maxLength={300}
+            showCount
+            placeholder="Краткое описание статьи для социальных сетей..."
+          />
+        </Form.Item>
+
         <Form.Item name="content" label="Содержание" rules={[{ required: true, message: 'Введите содержание' }]}>
           <RichTextEditor />
+        </Form.Item>
+
+        <Divider />
+
+        <Alert
+          message="LinkedIn интеграция"
+          description="При публикации статья будет автоматически расшарена на странице компании в LinkedIn (если чекбокс включён и LinkedIn подключён)."
+          type="info"
+          showIcon
+          icon={<LinkedinOutlined />}
+          style={{ marginBottom: 16 }}
+        />
+        <Form.Item name="shareToLinkedIn" valuePropName="checked">
+          <Checkbox>
+            <LinkedinOutlined style={{ marginRight: 6 }} />
+            Опубликовать в LinkedIn
+          </Checkbox>
         </Form.Item>
       </Form>
     </Edit>
