@@ -9,10 +9,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      process.env.ADMIN_ORIGIN ?? 'http://localhost:3001',
-      process.env.FRONTEND_ORIGIN ?? 'http://localhost:3002',
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        process.env.ADMIN_ORIGIN ?? 'http://localhost:3001',
+        process.env.FRONTEND_ORIGIN ?? 'http://localhost:3002',
+      ];
+
+      // Allow requests with no origin (server-to-server, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      // Allow exact matches
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      // Allow all Vercel preview/production deployments
+      if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
     exposedHeaders: ['X-Total-Count'],
   });
