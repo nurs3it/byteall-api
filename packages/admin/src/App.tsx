@@ -26,6 +26,7 @@ import { VacancyList, VacancyCreate, VacancyEdit } from './pages/vacancies';
 import { ApplicationList, ApplicationShow } from './pages/applications';
 import { InquiryList, InquiryShow } from './pages/inquiries';
 import { LinkedInSettings } from './pages/settings/linkedin';
+import { HealthPage } from './pages/settings/health';
 
 import {
   DashboardOutlined,
@@ -39,6 +40,7 @@ import {
   MessageOutlined,
   SettingOutlined,
   LinkedinOutlined,
+  HeartOutlined,
 } from '@ant-design/icons';
 
 const i18nProvider: I18nProvider = {
@@ -178,6 +180,11 @@ export default function App() {
                 list: '/settings/linkedin',
                 meta: { label: 'LinkedIn', icon: <LinkedinOutlined />, parent: 'settings' },
               },
+              {
+                name: 'settings/health',
+                list: '/settings/health',
+                meta: { label: 'Состояние сервисов', icon: <HeartOutlined />, parent: 'settings' },
+              },
             ]}
             options={{ syncWithLocation: true, warnWhenUnsavedChanges: true }}
           >
@@ -217,6 +224,7 @@ export default function App() {
                 <Route path="/inquiries" element={<InquiryList />} />
                 <Route path="/inquiries/:id" element={<InquiryShow />} />
                 <Route path="/settings/linkedin" element={<LinkedInSettings />} />
+                <Route path="/settings/health" element={<HealthPage />} />
                 <Route path="/403" element={<ForbiddenPage />} />
               </Route>
               <Route path="/login" element={<LoginPage />} />

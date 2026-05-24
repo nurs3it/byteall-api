@@ -13,6 +13,7 @@ import { VacanciesModule } from './vacancies/vacancies.module';
 import { ApplicationsModule } from './applications/applications.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
 import { LinkedInModule } from './linkedin/linkedin.module';
+import { HealthModule } from './health/health.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -30,6 +31,7 @@ import { LinkedInModule } from './linkedin/linkedin.module';
     ApplicationsModule,
     InquiriesModule,
     LinkedInModule,
+    HealthModule,
   ],
   providers: [
     {
