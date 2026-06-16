@@ -11,9 +11,10 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        process.env.ADMIN_ORIGIN ?? 'http://localhost:3001',
+        // ADMIN_ORIGIN may be a comma-separated list (custom domain + Render URL)
+        ...(process.env.ADMIN_ORIGIN ?? 'http://localhost:3001').split(','),
         process.env.FRONTEND_ORIGIN ?? 'http://localhost:3002',
-      ];
+      ].map((o) => o.trim());
 
       // Allow requests with no origin (server-to-server, curl, etc.)
       if (!origin) return callback(null, true);
